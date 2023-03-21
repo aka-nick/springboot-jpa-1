@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import javax.persistence.EntityManager;
 import jpabook.jpashop.domain.Address;
+import jpabook.jpashop.domain.Delivery;
+import jpabook.jpashop.domain.DeliveryStatus;
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.OrderStatus;
@@ -63,6 +65,28 @@ class OrderServiceTest {
         Assertions.assertThat(item.getStockQuantity()).isEqualTo(90);
     }
 
+    // 주문 실패하기(재고 부족)
+    @Test
+    void 재고부족으로_주문실패() {
+        Member member = new Member();
+        member.setName("회원1");
+        member.setAddress(new Address("서울", "백범로", "40404"));
+        em.persist(member);
+
+        Item item = new Book();
+        item.setName("자바조아");
+        item.setStockQuantity(100);
+        item.setPrice(10000);
+        em.persist(item);
+
+        int count = 100000000; // 초과된 주문 수량
+
+        // 재고 수량보다 큰 주문 수량 요청이 들어오면 NotEnoughStockException 발생
+        Assertions.assertThatThrownBy(() -> orderService.order(member.getId(), item.getId(), count))
+                .isInstanceOf(NotEnoughStockException.class);
+    }
+
+
     // 주문 취소하기
     @Test
     void 주문취소() {
@@ -85,14 +109,16 @@ class OrderServiceTest {
 
         orderService.cancelOrder(orderId);
 
-
+        // 상태가 취소가 됐나?
         Assertions.assertThat(orderRepository.findOne(orderId).getStatus())
                 .isEqualTo(OrderStatus.CANCEL);
+
+        // 수량이 돌아왔나?
+        Assertions.assertThat(item.getStockQuantity()).isEqualTo(100);
     }
 
-    // 주문 실패하기(재고 부족)
     @Test
-    void 재고부족으로_주문실패() {
+    void 이미발송중이어서_주문취소실패() {
         Member member = new Member();
         member.setName("회원1");
         member.setAddress(new Address("서울", "백범로", "40404"));
@@ -104,10 +130,13 @@ class OrderServiceTest {
         item.setPrice(10000);
         em.persist(item);
 
-        int count = 100000000; // 초과된 주문 수량
+        int count = 10;
+        Long orderId = orderService.order(member.getId(), item.getId(), count);
+        Order find = orderRepository.findOne(orderId);
+        find.getDelivery().setStatus(DeliveryStatus.COMP);
 
-        // 재고 수량보다 큰 주문 수량 요청이 들어오면 NotEnoughStockException 발생
-        Assertions.assertThatThrownBy(() -> orderService.order(member.getId(), item.getId(), count))
-                .isInstanceOf(NotEnoughStockException.class);
+        // 이미 배송중이면 취소할 수 없다
+        Assertions.assertThatThrownBy(() -> orderService.cancelOrder(orderId))
+                .isInstanceOf(IllegalStateException.class);
     }
 }
