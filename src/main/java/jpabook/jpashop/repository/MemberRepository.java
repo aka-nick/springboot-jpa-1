@@ -3,14 +3,16 @@ package jpabook.jpashop.repository;
 import java.util.List;
 import javax.persistence.EntityManager;
 import jpabook.jpashop.domain.Member;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class MemberRepository  {
 
-    @Autowired
     private EntityManager em;
+
+    public MemberRepository(EntityManager em) {
+        this.em = em;
+    }
 
     public void save(Member member) {
         em.persist(member);
