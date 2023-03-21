@@ -11,6 +11,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToMany;
 import jpabook.jpashop.domain.Category;
+import jpabook.jpashop.exception.NotEnoughStockException;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -38,7 +39,7 @@ public abstract class Item {
     public void addStock(int quantity) {
         this.stockQuantity += quantity;
     }
-    public void removeStock(int quantity) {
+    public void removeStock(int quantity) throws NotEnoughStockException {
         if (this.stockQuantity < quantity) {
             throw new NotEnoughStockException("stockQuantity is not enough");
         }
