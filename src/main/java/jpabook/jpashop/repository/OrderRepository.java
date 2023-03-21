@@ -1,7 +1,5 @@
 package jpabook.jpashop.repository;
 
-import java.awt.desktop.PrintFilesEvent;
-import java.util.List;
 import javax.persistence.EntityManager;
 import jpabook.jpashop.domain.Order;
 import org.springframework.stereotype.Repository;
