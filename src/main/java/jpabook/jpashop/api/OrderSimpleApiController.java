@@ -51,11 +51,19 @@ public class OrderSimpleApiController {
 
         public SimpleOrdersDto(Order order) {
             orderId = order.getId();
-            name = order.getMember().getName();
+            name = order.getMember().getName(); // 여기서 Member 객체 초기화
             orderDate = order.getOrderDate();
             orderStatus = order.getStatus();
-            address = order.getDelivery().getAddress();
+            address = order.getDelivery().getAddress(); // 여기서 Delivery 객체 초기화
         }
     }
+
+    @GetMapping("/api/v3/simple-orders")
+    public List<SimpleOrdersDto> ordersV3() {
+        return orderRepository.findAllWithMemberDelivery().stream()
+                .map(SimpleOrdersDto::new)
+                .collect(Collectors.toList());
+    }
+
 
 }
