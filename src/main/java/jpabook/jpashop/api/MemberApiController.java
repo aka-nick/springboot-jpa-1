@@ -1,6 +1,7 @@
 package jpabook.jpashop.api;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.service.MemberService;
 import lombok.Data;
@@ -31,6 +32,7 @@ public class MemberApiController {
 
     @Data
     static class CreateMemberRequest {
+        @NotEmpty
         private String name;
     }
     @Data
