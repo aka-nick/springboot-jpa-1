@@ -1,11 +1,14 @@
 package jpabook.jpashop.api;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.service.MemberService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -70,4 +73,11 @@ public class MemberApiController {
             this.name = name;
         }
     }
+
+    @GetMapping("/api/v1/members")
+    public List<Member> memberListV1() {
+        return memberService.findMembers();
+    }
+
+
 }
