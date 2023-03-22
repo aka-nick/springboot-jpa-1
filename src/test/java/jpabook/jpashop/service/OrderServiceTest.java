@@ -1,10 +1,7 @@
 package jpabook.jpashop.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import javax.persistence.EntityManager;
 import jpabook.jpashop.domain.Address;
-import jpabook.jpashop.domain.Delivery;
 import jpabook.jpashop.domain.DeliveryStatus;
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.domain.Order;

@@ -12,11 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 class MemberServiceTest {
 
     @Autowired
-    MemberService memberService;
-
-//    public MemberServiceTest(MemberService memberService) {
-//        this.memberService = memberService;
-//    }
+    private MemberService memberService;
 
     @Test
     void 정상회원가입() {
