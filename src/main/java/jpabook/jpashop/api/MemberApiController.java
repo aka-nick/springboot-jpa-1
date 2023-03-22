@@ -79,5 +79,31 @@ public class MemberApiController {
         return memberService.findMembers();
     }
 
+    @GetMapping("/api/v2/members")
+    public Result<ListMemberResponse> memberListV2() {
+        List<ListMemberResponse> collect = memberService.findMembers().stream()
+                .map(m -> new ListMemberResponse(m.getId(), m.getName()))
+                .collect(Collectors.toList());
+        return new Result(collect);
+    }
 
+    @Data
+    static class Result<T> {
+        private T data;
+
+        public Result(T data) {
+            this.data = data;
+        }
+    }
+
+    @Data
+    static class ListMemberResponse {
+        private Long id;
+        private String name;
+
+        public ListMemberResponse(Long id, String name) {
+            this.id = id;
+            this.name = name;
+        }
+    }
 }
