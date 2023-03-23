@@ -1,5 +1,6 @@
 package jpabook.jpashop.repository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -10,9 +11,12 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import jpabook.jpashop.domain.Address;
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.OrderSearch;
+import jpabook.jpashop.domain.OrderStatus;
+import lombok.Data;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -61,6 +65,12 @@ public class OrderRepository {
         return em.createQuery("select o from Order o "
                         + "join fetch o.member m "
                         + "join fetch o.delivery d ", Order.class)
+                .getResultList();
+    }
+
+    public List<OrderSimpleQueryDto> findOrderDto() {
+        return em.createQuery("select new jpabook.jpashop.repository.OrderSimpleQueryDto(o.id, m.name, o.orderDate, o.status, d.address) from Order o join o.member m join o.delivery d",
+                OrderSimpleQueryDto.class)
                 .getResultList();
     }
 }
