@@ -3,6 +3,7 @@ package jpabook.jpashop.api;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import jpabook.jpashop.api.OrderApiController.OrderDto.OrderItemDto;
 import jpabook.jpashop.domain.Address;
 import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.OrderItem;
@@ -71,6 +72,14 @@ public class OrderApiController {
                 this.totalPrice = oi.getTotalPrice();
             }
         }
+    }
+
+    @GetMapping("/api/v3/orders")
+    public List<OrderDto> ordersV3() {
+        List<Order> orders = orderRepository.findAllWithItem();
+        return orders.stream()
+                .map(OrderDto::new)
+                .collect(Collectors.toList());
     }
 
 }
