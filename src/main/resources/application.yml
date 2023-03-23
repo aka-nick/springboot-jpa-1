@@ -12,6 +12,8 @@ spring:
       hibernate:
         format_sql: true      # ???? sql? ??? ???
         show_sql: true     # System.out? ??? sql? ??
+        default_batch_fetch_size: 10
+        batch_fetch_style: legacy
 #        dialect: org.hibernate.dialect.H2Dialect
 
 logging:
