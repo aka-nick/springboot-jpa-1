@@ -33,6 +33,44 @@ public class OrderApiController {
                 .collect(Collectors.toList());
     }
 
+    @GetMapping("/api/v2/orders")
+    public List<OrderDto> ordersV2() {
+        List<Order> orders = orderRepository.findAll(new OrderSearch());
+        return orders.stream()
+                .map(OrderDto::new)
+                .collect(Collectors.toList());
+    }
+    @Getter
+    static class OrderDto {
+        private Long orderId;
+        private String name;
+        private LocalDateTime orderDate;
+        private OrderStatus orderStatus;
+        private Address address;
+        private List<OrderItemDto> orderItems;
 
+        public OrderDto(Order o) {
+            this.orderId = o.getId();
+            this.name = o.getMember().getName();
+            this.orderDate = o.getOrderDate();
+            this.orderStatus = o.getStatus();
+            this.address = o.getDelivery().getAddress();
+            this.orderItems = o.getOrderItems().stream()
+                    .map(OrderItemDto::new).collect(Collectors.toList());
+        }
+
+        @Getter
+        static class OrderItemDto {
+            private Long id;
+            private String name;
+            private int totalPrice;
+
+            public OrderItemDto(OrderItem oi) {
+                this.id = oi.getId();
+                this.name = oi.getItem().getName();
+                this.totalPrice = oi.getTotalPrice();
+            }
+        }
+    }
 
 }
