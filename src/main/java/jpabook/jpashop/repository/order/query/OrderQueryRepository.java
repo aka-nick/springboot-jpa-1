@@ -1,6 +1,7 @@
 package jpabook.jpashop.repository.order.query;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -51,5 +52,30 @@ public class OrderQueryRepository {
                                 + " join o.member m"
                                 + " join o.delivery d ", OrderQueryDto.class)
                 .getResultList();
+    }
+
+
+    public List<OrderQueryDto> findAllByDtoOptimization() {
+        List<OrderQueryDto> orders = findOrders();
+
+        List<Long> orderIds = orders.stream()
+                .map(OrderQueryDto::getOrderId)
+                .collect(Collectors.toList());
+
+        List<OrderItemQueryDto> orderItems = em.createQuery(
+                        "select "
+                                + " new jpabook.jpashop.repository.order.query.OrderItemQueryDto(oi.order.id, oi.item.name, oi.orderPrice, oi.count)"
+                                + " from OrderItem oi "
+                                + " join oi.item i "
+                                + " where oi.order.id in :orderIds ", OrderItemQueryDto.class)
+                .setParameter("orderIds", orderIds)
+                .getResultList();
+
+        // 두 개의 리스트에 대하여 이중 반복문이 필요할 때, 한 리스트를 맵으로 묶어서 처리할 수도 있다(돌아가는 건 똑같지만 소스코드가 조금 깔끔해보인다).
+        Map<Long, List<OrderItemQueryDto>> orderItemMap = orderItems.stream()
+                .collect(Collectors.groupingBy(OrderItemQueryDto::getOrderId));
+
+        orders.forEach(o -> o.setOrderItems(orderItemMap.get(o.getOrderId())));
+        return orders;
     }
 }
